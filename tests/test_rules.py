@@ -33,6 +33,9 @@ FROZEN = {
         "codex-no-forced-cot", "codex-outcome-contract", "codex-lean",
         "codex-no-contradiction", "codex-explicit-action", "codex-dial-scaffold",
         "codex-agents-md", "codex-autonomy",
+        # GPT-6 Astra, добавлены осознанно 07.09.2026 по гайду вендора
+        "astra-bias-to-action", "astra-user-over-skill",
+        "astra-slop-blocklist", "astra-tests-restraint",
     },
     "gemini": {"gemini-context-file"},
     "grok": {"grok-context-file"},

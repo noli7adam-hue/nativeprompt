@@ -1,6 +1,6 @@
 {
   "note": "Манифест самообновления: канонические .md/llms.txt страницы вендоров, которые `nativeprompt update` тянет и диффает против снапшота. Правила НЕ трогаются автоматически — при изменении открывается PR на ревью.",
-  "rules_version": "2026-07-29",
+  "rules_version": "2026-09-07",
   "families": {
     "claude": {
       "docs": [
@@ -22,7 +22,8 @@
         "https://learn.chatgpt.com/docs/prompting.md",
         "https://learn.chatgpt.com/docs/config-file/config-reference.md",
         "https://learn.chatgpt.com/docs/agent-configuration/agents-md.md",
-        "https://learn.chatgpt.com/docs/build-skills.md"
+        "https://learn.chatgpt.com/docs/build-skills.md",
+        "https://developers.openai.com/api/docs/guides/latest-model.md"
       ],
       "index": "https://developers.openai.com/llms.txt"
     },

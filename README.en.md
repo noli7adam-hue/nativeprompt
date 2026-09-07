@@ -9,10 +9,16 @@
 ![MIT](https://img.shields.io/badge/license-MIT-black)
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)
 ![zero deps](https://img.shields.io/badge/dependencies-0-brightgreen)
-![2436 tests](https://img.shields.io/badge/tests-2436%20passing-brightgreen)
+![2459 tests](https://img.shields.io/badge/tests-2459%20passing-brightgreen)
 ![no API keys](https://img.shields.io/badge/API%20keys-none-1f6feb)
+![latest models](https://img.shields.io/badge/GPT--6%20Astra%20%C2%B7%20Fable%205.1-supported-d97757)
 
-Claude Code · Codex · 2436 tests · zero dependencies · no API key · runs offline
+Claude Code · Codex · 2459 tests · zero dependencies · no API key · runs offline
+
+> **Fresh.** Rules for **GPT-6 Astra** landed on 7 September 2026, six days after the
+> model shipped: all four behaviours that show up in the prompt text itself. Rules for
+> **Claude Fable 5.1** landed on 2 September, the day after its release. Full model list
+> below.
 
 Scope: the **agentic CLIs** — Claude Code, Codex, Gemini CLI, Grok Build, Qwen Code and Kimi CLI. Not the API, not the web chat.
 
@@ -38,6 +44,29 @@ The two vendors do not agree on what a good prompt looks like. Their own docs sa
 | "CRITICAL: you MUST…" in caps | **drop the caps** — aggressive scaffolding causes over-triggering on new models | **drop it** — GPT‑4.1-era scaffolding, no longer helps ([GPT‑5 prompting guide](https://developers.openai.com/cookbook/examples/gpt-5/gpt-5_prompting_guide)) |
 
 So a prompt tuned on one CLI is measurably *mis*-tuned on the other. `nativeprompt` detects which one you're on and applies that vendor's published rules — plus it recommends **how to run** the task (`/goal`, `/loop`, plan mode, dynamic workflow on Claude Code; `/plan`, `/goal`, delegation on Codex).
+
+## Supported models
+
+Rules are worked out **per generation**, not per vendor: each model differs, and lumping
+them together means guessing.
+
+| Model | Rules | Added | Vendor guide |
+|---|:--:|---|---|
+| **GPT-6 Astra** | 4 + family | 2026-09-07, six days after release | [latest-model](https://developers.openai.com/api/docs/guides/latest-model) |
+| GPT-5.6 (sol / terra / luna) | family | 2026-07-29 | [prompt-guidance](https://developers.openai.com/api/docs/guides/prompt-guidance) |
+| **Claude Fable 5.1** | 4 + family | 2026-09-02, the day after release | [prompting-fable-5-1](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5-1) |
+| Claude Opus 5 | 4 + family | 2026-07-29 | [prompting-opus-5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5) |
+| Claude Sonnet 5, Opus 4.8 | family | 2026-07-29 | general best practices |
+| Gemini CLI, Grok Build, Qwen Code, Kimi CLI | one each | 2026-08-04 | vendors publish no prompting rules |
+
+**What changed in Astra.** It asks a clarifying question where you expected work, and
+stops. It ships a vendor-published blocklist of tells that mark prose as machine-written
+(the "X, not Y" construction is on that list). It can rank AGENTS.md project rules above
+your own request. And it writes tests for small reversible changes. All four are fixed by
+a line in the prompt, which is why they are this tool's business.
+
+Unrelated to prompt text but it breaks old integrations: Astra no longer accepts
+`temperature`, `top_p` or `top_logprobs`, and reasoning effort `none` is gone.
 
 ## It runs on the subscription you already pay for
 
@@ -67,7 +96,7 @@ Hard to argue with, and much shorter than explaining it yourself.
 Your own rules sit next to the vendors'.
 
 **People maintaining a project over time.** Vendors change their recommendations and you are
-usually the last to hear. `nativeprompt update` watches 24 doc pages and tells you when the
+usually the last to hear. `nativeprompt update` watches 25 doc pages and tells you when the
 source moved.
 
 ## What makes it different
@@ -305,7 +334,7 @@ detect  →  analyze  →  rewrite  →  harness  →  explain          (+ updat
 [новое]            openai  https://learn.chatgpt.com/docs/prompting.md
 [без изменений]    claude  https://code.claude.com/docs/en/best-practices.md
 ...
-Итог: изменилось 1, новых 4, без изменений 17, недоступно 0 (из 24).
+Итог: изменилось 1, новых 4, без изменений 17, недоступно 0 (из 25).
 ```
 
 A weekly GitHub Actions job (`.github/workflows/update-rules.yml`) runs exactly that and fails when the official guidance moved. **The rules are never rewritten automatically** — a maintainer reads the changed doc, updates the JSON, and lands it in a PR, then records the new snapshot with `nativeprompt update --write`. That is a deliberate design choice: a cheat sheet you can audit is worth more than one that mutates silently.
@@ -319,7 +348,7 @@ Deliberately narrow, so the tool stays trustworthy:
 - **Detectors are regex heuristics.** Unusual phrasings will produce false positives and misses. It is an assistant, not an oracle.
 - **An alias is not a version.** `opus`, `sonnet`, `best` resolve differently per provider and plan, so generation-specific rules are withheld and family rules applied — and the CLI says so.
 - **No benchmark claims.** The tool applies the vendors' published rules; it does not measure that your prompt got "N% better", and it will never print such a number.
-- **Depth differs by vendor.** Claude Code and Codex are worked out per generation: 18 and 8 rules. Gemini CLI, Grok Build, Qwen Code and Kimi CLI get one rule and a harness hint each, because those vendors publish far less. Inventing rules and signing a vendor's name to them would defeat the whole point.
+- **Depth differs by vendor.** Claude Code and Codex are worked out per generation: 18 and 12 rules. Gemini CLI, Grok Build, Qwen Code and Kimi CLI get one rule and a harness hint each, because those vendors publish far less. Inventing rules and signing a vendor's name to them would defeat the whole point.
 
 Honest limits are tracked in [`CLAIMS.md`](CLAIMS.md).
 
@@ -328,7 +357,7 @@ Honest limits are tracked in [`CLAIMS.md`](CLAIMS.md).
 Verify first:
 
 ```bash
-python3 -m pytest -q          # 2436 tests: detection, detectors, rewrite, harness, rules integrity, frozen snapshot, self-check, refusal, hook context budget, reproducibility card
+python3 -m pytest -q          # 2459 tests: detection, detectors, rewrite, harness, rules integrity, frozen snapshot, self-check, refusal, hook context budget, reproducibility card
 ```
 
 **Adding or changing a rule.** Rules live in `nativeprompt/rules/<family>.json`. A rule is only accepted with a **link to the vendor's own documentation** — no folklore, no blog posts, no "it worked for me". Shape:

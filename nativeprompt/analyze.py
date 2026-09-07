@@ -467,6 +467,53 @@ def _c_contradiction_hint(p, low, t):
     return any(a in low and b in low for a, b in pairs)
 
 
+#: Предмет, из-за которого «напиши» перестаёт быть просьбой о прозе.
+#: «Напиши тест», «напиши функцию», «напиши скрипт» — это код, и блоклист
+#: слов-маркеров там ни при чём: в коде не бывает канцелярита.
+_ПРЕДМЕТ_КОДА = re.compile(
+    r"(тест\w*|функци\w+|метод\w*|класс\w*|скрипт\w*|компонент\w*|эндпойнт\w*|"
+    r"миграци\w+|запрос\w*|конфиг\w*|хук\w*|сборк\w+|деплой|дамп|"
+    r"test|function|method|class|script|component|endpoint|migration|query|config)",
+    re.I,
+)
+
+#: Просьба о прозе: текст, который человек будет читать глазами.
+_ПРОЗА = re.compile(
+    r"(напиш\w+|составь|сочини|сформулируй|перепиш\w+|отредактируй|вычита\w+|"
+    r"сделай (описание|текст|пост|статью|письмо|рассылку)|"
+    r"write|draft|rewrite|edit|compose|proofread)",
+    re.I,
+)
+
+#: Что именно пишем: без этого «перепиши» может относиться к коду.
+_ЖАНР = re.compile(
+    r"(текст\w*|стать\w+|пост\w*|письм\w+|рассылк\w+|описани\w+|абзац\w*|"
+    r"заголовк\w*|аннотаци\w+|конспект\w*|сценари\w+|реч\w+|колонк\w+|"
+    r"объявлени\w+|карточк\w+ товара|"
+    r"text|article|post|letter|email|newsletter|description|paragraph|"
+    r"headline|blog|copy|essay)",
+    re.I,
+)
+
+
+def _c_writing_task(p, low, t):
+    """Задача на прозу, а не на код.
+
+    Нужна ровно одному правилу: блоклист слов-маркеров, который OpenAI
+    опубликовала для Astra, относится к тексту для человека. На «почини баг»
+    он мимо, и гореть там значит платить контекстом за шум.
+    """
+    if not _ПРОЗА.search(low):
+        return False
+    if not _ЖАНР.search(low):
+        return False
+    # «напиши тест на функцию login» — жанра нет, предмет кодовый
+    хвост = low[low.find(_ПРОЗА.search(low).group(0).lower()):]
+    if _ПРЕДМЕТ_КОДА.search(хвост) and not _ЖАНР.search(хвост):
+        return False
+    return True
+
+
 def _c_needs_agents_md(p, low, t):
     """Постоянные правила проекта просятся в контекстный файл, а не в промпт.
 
@@ -551,6 +598,7 @@ def _c_code_task(p, low, t):
 
 _CHECKS = {
     "always": _c_always,
+    "writing_task": _c_writing_task,
     "missing_context": _c_missing_context,
     "missing_verification": _c_missing_verification,
     "describe_location": _c_describe_location,

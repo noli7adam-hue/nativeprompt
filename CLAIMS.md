@@ -20,7 +20,7 @@ Keying is by **family + generation**, so an id the cheatsheet has never seen (`c
 
 ### Rules come from vendor documentation
 
-Every rule in `nativeprompt/rules/*.json` carries a `source` URL pointing at an official Anthropic or OpenAI page. There are **26 rules** today across six families:
+Every rule in `nativeprompt/rules/*.json` carries a `source` URL pointing at an official Anthropic or OpenAI page. There are **34 rules** today across six families:
 
 | Family | Rules | Scope split | Harness recommendations |
 |---|---|---|---|
@@ -51,7 +51,7 @@ The tool classifies the task into one of `trivial | planning | goal | loop | wor
 
 ### Self-update actually fetches
 
-`nativeprompt update` downloads the 24 canonical `.md` / `llms.txt` vendor pages listed in `rules/_sources.json`, hashes them with SHA‑256, and diffs against `rules/_snapshot.json`. It exits non‑zero when something changed or is new, so CI can fail on it; `.github/workflows/update-rules.yml` runs it weekly.
+`nativeprompt update` downloads the 25 canonical `.md` / `llms.txt` vendor pages listed in `rules/_sources.json`, hashes them with SHA‑256, and diffs against `rules/_snapshot.json`. It exits non‑zero when something changed or is new, so CI can fail on it; `.github/workflows/update-rules.yml` runs it weekly.
 
 A real run on 2026‑07‑30: **14 fetched — 9 unchanged, 1 changed, 4 new, 0 unreachable → action needed.** That is the mechanism working, not a passing grade: it means a maintainer owes the cheatsheet a review pass.
 
@@ -298,10 +298,10 @@ Separately, on why the project's own tests missed all of this. There were 67 and
 ## How to verify
 
 ```bash
-# 1. Test suite — 2436 tests, no dependencies beyond pytest
+# 1. Test suite — 2459 tests, no dependencies beyond pytest
 cd nativeprompt && python3 -m pytest -q
-# 2436 passed
-#   688 invariant · 528 hook budget · 479 reproducibility card · 361 self-check · 91 rule integrity · 73 regressions · 69 prompt-as-data · 32 detection · 23 refusal · 23 capabilities · 10 coverage · 9 analysis · 8 rewrite · 6 harness · 23 fable-rules · 10 install · 3 update
+# 2459 passed
+#   688 invariant · 528 hook budget · 479 reproducibility card · 361 self-check · 91 rule integrity · 73 regressions · 69 prompt-as-data · 32 detection · 23 refusal · 23 capabilities · 10 coverage · 9 analysis · 8 rewrite · 6 harness · 23 fable-rules · 10 install · 3 update · 23 astra
 
 # 2. Every rule with its official source — spot-check the links
 python3 -m nativeprompt rules claude
